@@ -1,0 +1,6 @@
+*.iml
+/.idea
+/dist
+.parcel-cache
+.git
+node_modules

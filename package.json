@@ -1,0 +1,19 @@
+{
+  "name": "wizard-score-keeper",
+  "author": "Max Schröter <kontakt@max-schroeter.com>",
+  "type": "module",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@parcel/packager-raw-url": "^2.11.0",
+    "@parcel/transformer-webmanifest": "^2.11.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "parcel": "^2.11.0"
+  }
+}

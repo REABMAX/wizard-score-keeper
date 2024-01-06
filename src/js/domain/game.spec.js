@@ -1,5 +1,7 @@
 import {Game, STATUS_GAME_STARTED} from "./game.js";
-import {GameStarted, PlayerRegistered, PlayerRemoved} from "./events.js";
+import {GameStarted, PlayerRegistered, PlayerRemoved, RoundFinished} from "./events.js";
+import {jest} from "@jest/globals";
+import {STATUS_FINISHED} from "./round.js";
 
 describe("game", () => {
     describe("registering a player", () => {
@@ -128,6 +130,79 @@ describe("game", () => {
                 expect(listener).toHaveBeenCalledTimes(1)
                 expect(listener).toHaveBeenCalledWith(expectedEvent)
             })
+        })
+    })
+
+    describe("playing", () => {
+        it("adds scores of each round", () => {
+            const players = ["john", "mary", "anonymous"]
+            const roundFinishedListener = jest.fn()
+
+            // init game
+            const game = new Game("id")
+            game.addEventListener(RoundFinished.NAME, roundFinishedListener)
+
+            // register players
+            game.registerPlayer(players[0])
+            game.registerPlayer(players[1])
+            game.registerPlayer(players[2])
+
+            // start
+            game.start()
+
+            // first round
+            game.submitGuesses([{
+                player: players[0],
+                guess: 1,
+            }, {
+                player: players[1],
+                guess: 0,
+            }, {
+                player: players[2],
+                guess: 1
+            },])
+            game.enterResults([{
+                player: players[0],
+                tricks: 1,
+            }, {
+                player: players[1],
+                tricks: 0,
+            }, {
+                player: players[2],
+                tricks: 0,
+            },], false)
+            expect(roundFinishedListener).toHaveBeenCalledWith(new RoundFinished(STATUS_FINISHED, new Map([
+                [players[0], 30],
+                [players[1], 20],
+                [players[2], -10],
+            ]), 1))
+
+            // second round
+            game.submitGuesses([{
+                player: players[0],
+                guess: 1,
+            }, {
+                player: players[1],
+                guess: 2,
+            }, {
+                player: players[2],
+                guess: 0,
+            },])
+            game.enterResults([{
+                player: players[0],
+                tricks: 0,
+            }, {
+                player: players[1],
+                tricks: 1,
+            }, {
+                player: players[2],
+                tricks: 0,
+            },], true)
+            expect(roundFinishedListener).toHaveBeenCalledWith(new RoundFinished(STATUS_FINISHED, new Map([
+                [players[0], 20],
+                [players[1], 10],
+                [players[2], 10],
+            ]), 2))
         })
     })
 })

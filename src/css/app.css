@@ -16,6 +16,16 @@ a:hover {
     color: #739072;
 }
 
+label.checkbox {
+    width: auto;
+    margin-bottom: .5rem;
+}
+
+label.checkbox input {
+    width: auto;
+    display: inline;
+}
+
 html,body {
     height: 100%;
 }
@@ -79,6 +89,7 @@ button {
     margin: .5rem .5rem .5rem 0;
     border-radius: 5px;
     background: #4F6F52;
+    color: #ECE3CE;
     cursor: pointer;
     border: none;
 }
@@ -107,6 +118,7 @@ button:hover {
     padding-left: .5rem;
     border-radius: 5px;
     background: #4F6F52;
+    color: #ECE3CE;
     display: inline-block;
 }
 

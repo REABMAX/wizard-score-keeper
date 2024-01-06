@@ -2,6 +2,10 @@ const template = document.createElement("template")
 template.innerHTML = `
     <div class="error-container"></div>
     <form class="enter-results-form" action="">
+        <label class="checkbox">
+            <input type="checkbox" name="bomb_played" value="1">
+            Bomb card was played
+        </label>
         <button type="submit">Enter results</button>
     </form>
 `
@@ -45,7 +49,7 @@ export class EnterResultsComponent extends HTMLElement {
             element.querySelector("input").name = player
             wrapper.appendChild(element)
         })
-        this._form.insertBefore(wrapper, this._form.firstChild)
+        this._form.insertBefore(wrapper, this._form.querySelector("button"))
     }
 
     _drawError(message) {
@@ -63,7 +67,8 @@ export class EnterResultsComponent extends HTMLElement {
                 player: player,
                 tricks: form.get(player)
             }))
-            this._game.enterResults(results)
+            const wasBombPlayed = form.get("bomb_played") === "1"
+            this._game.enterResults(results, wasBombPlayed)
         } catch (e) {
             this._drawError(e)
         }

@@ -4,6 +4,31 @@ import {GuessesSubmitted, RoundFinished} from "./events.js";
 describe("round", () => {
     const players = ["john", "mary", "joana"]
 
+    describe("next round", () => {
+        it("total tricks of a new round always do match the round number", () => {
+            // given
+            const round = new Round(players)
+            round._tricksTotal--
+
+            // when
+            const nextRound = round.next()
+
+            // then
+            expect(nextRound._tricksTotal).toEqual(nextRound._roundNumber)
+        })
+
+        it("initializes new round with last round's score", () => {
+            // given
+            const round = new Round(players)
+
+            // when
+            const nextRound = round.next()
+
+            // then
+            expect(nextRound._scores).toStrictEqual(round._scores)
+        })
+    })
+
     describe("guessing", () => {
         it("throws error when status is not GUESSING", () => {
             // given
@@ -127,7 +152,7 @@ describe("round", () => {
 
             // when, then
             expect(() => {
-                round.enterResults(results)
+                round.enterResults(results, false)
             }).toThrowError()
         })
 
@@ -142,7 +167,7 @@ describe("round", () => {
 
             // when, then
             expect(() => {
-                round.enterResults(results)
+                round.enterResults(results, false)
             }).toThrowError()
         })
 
@@ -163,7 +188,7 @@ describe("round", () => {
 
             // when, then
             expect(() => {
-                round.enterResults(results)
+                round.enterResults(results, false)
             }).toThrowError()
         })
 
@@ -184,8 +209,38 @@ describe("round", () => {
 
             // when, then
             expect(() => {
-                round.enterResults(results)
+                round.enterResults(results, false)
             }).toThrowError()
+        })
+
+        it("takes into account if bomb card was played which means the amount of total tricks is one less", () => {
+            // given
+            const round = new Round(players)
+            const setting = [{
+                player: players[0],
+                guess: 1,
+                tricks: 0,
+                score: 30,
+            }, {
+                player: players[1],
+                guess: 1,
+                tricks: 0,
+                score: -10,
+            }, {
+                player: players[2],
+                guess: 0,
+                tricks: 0,
+                score: 20,
+            }]
+            round.submitGuesses(setting.map(({player, guess}) => ({player: player, guess: guess})))
+
+            // when
+            round.enterResults(setting.map(({player, tricks}) => ({player: player, tricks: tricks})), true)
+
+            // then
+            const event = round.releaseEvents().find(event => event instanceof RoundFinished)
+            expect(event).not.toBeUndefined()
+            expect(event.status).toBe(STATUS_FINISHED)
         })
 
         it("produces RoundFinished event on success", () => {
@@ -210,7 +265,7 @@ describe("round", () => {
             round.submitGuesses(setting.map(({player, guess}) => ({player: player, guess: guess})))
 
             // when
-            round.enterResults(setting.map(({player, tricks}) => ({player: player, tricks: tricks})))
+            round.enterResults(setting.map(({player, tricks}) => ({player: player, tricks: tricks})), false)
 
             // then
             const event = round.releaseEvents().find(event => event instanceof RoundFinished)

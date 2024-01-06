@@ -23,8 +23,8 @@ export class Round {
 
     next() {
         const round = new Round(this._players)
-        round._tricksTotal = this._tricksTotal + 1
         round._roundNumber = this._roundNumber + 1
+        round._tricksTotal = round._roundNumber
         round._scores = this._scores
         round._addEvent(new RoundStarted(round._tricksTotal))
         return round
@@ -63,9 +63,13 @@ export class Round {
         this._addEvent(new GuessesSubmitted(this._status, transformMap(this._guesses, guess => guess.guess), this._roundNumber))
     }
 
-    enterResults(results) {
+    enterResults(results, wasBombCardPlayed) {
         if (this._status !== STATUS_GUESSED) {
             throw Error("cannot add player result when status is " + this._status)
+        }
+
+        if (wasBombCardPlayed) {
+            this._bombCardWasPlayed()
         }
 
         const containsNegativeTricks = results => results.find(result => result.tricks < 0)
@@ -81,7 +85,7 @@ export class Round {
             throw Error("not all player results have been entered")
         }
 
-        if (!this._assertResultsMatchTotalTricks()) {
+        if (!this._assertResultsMatchTotalTricks(wasBombCardPlayed)) {
             throw Error("results must match total tricks")
         }
 
@@ -108,6 +112,10 @@ export class Round {
                 playerScores.set(score.player, score)
                 return playerScores
             }, new Map())
+    }
+
+    _bombCardWasPlayed() {
+        this._tricksTotal--
     }
 
     _assertAllGuessesHaveBeenSet() {

@@ -64,10 +64,10 @@ export class Game {
         round.releaseEvents().forEach(this._fireEvent.bind(this))
     }
 
-    enterResults(results) {
+    enterResults(results, wasBombCardPlayed) {
         try {
             const round = this._currentRound()
-            round.enterResults(results)
+            round.enterResults(results, wasBombCardPlayed)
             round.releaseEvents().forEach(this._fireEvent.bind(this))
         } catch (e) {
             throw e
@@ -82,7 +82,7 @@ export class Game {
         this._eventListeners.get(event).push(listener)
     }
 
-    _onRoundFinished(event) {
+    _onRoundFinished() {
         if (this._haveAllRoundsBeenPlayed()) {
             this._status = STATUS_GAME_FINISHED
             this._fireEvent(new GameFinished(this._status))

@@ -60,6 +60,26 @@ describe("round", () => {
             }).toThrowError()
         })
 
+        it("throws error when guesses contain negative guess", () => {
+            // given
+            const round = new Round(players)
+            const guesses = [{
+                player: players[0],
+                guess: 1,
+            }, {
+                player: players[1],
+                guess: -2,
+            }, {
+                player: players[2],
+                guess: 0,
+            }]
+
+            // when, then
+            expect(() => {
+                round.submitGuesses(guesses)
+            }).toThrowError()
+        })
+
         it("produces GuessesSubmitted event on success", () => {
             // given
             const round = new Round(players)
@@ -136,6 +156,27 @@ describe("round", () => {
             }, {
                 player: players[1],
                 tricks: 0,
+            }, {
+                player: players[2],
+                tricks: 1,
+            }]
+
+            // when, then
+            expect(() => {
+                round.enterResults(results)
+            }).toThrowError()
+        })
+
+        it("throws error when results contain negative tricks", () => {
+            // given
+            const round = new Round(players)
+            round._status = STATUS_GUESSED
+            const results = [{
+                player: players[0],
+                tricks: 1,
+            }, {
+                player: players[1],
+                tricks: -2,
             }, {
                 player: players[2],
                 tricks: 1,

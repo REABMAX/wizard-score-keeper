@@ -41,6 +41,11 @@ export class Round {
             throw Error("cannot guess round in status " + this._status)
         }
 
+        const containsNegativeGuesses = guesses => guesses.find(guess => guess.guess < 0)
+        if (containsNegativeGuesses(guesses)) {
+            throw Error("cannot add negative guesses")
+        }
+
         guesses.forEach(guess => {
             this._guesses.set(guess.player, new Guess(guess.player, Number(guess.guess)))
         })
@@ -61,6 +66,11 @@ export class Round {
     enterResults(results) {
         if (this._status !== STATUS_GUESSED) {
             throw Error("cannot add player result when status is " + this._status)
+        }
+
+        const containsNegativeTricks = results => results.find(result => result.tricks < 0)
+        if (containsNegativeTricks(results)) {
+            throw Error("cannot add player results with negative tricks")
         }
 
         results.forEach(result => {

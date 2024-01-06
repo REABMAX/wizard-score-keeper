@@ -9,7 +9,7 @@ template.innerHTML = `
 const playerTemplate = document.createElement("template")
 playerTemplate.innerHTML = `
     <label>Player name</label>
-    <input type="number" name="player" value="0">
+    <input type="number" name="player" min="0" value="0">
 `
 
 export class EnterResultsComponent extends HTMLElement {
